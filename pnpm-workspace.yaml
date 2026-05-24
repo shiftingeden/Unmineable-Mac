@@ -1,0 +1,7 @@
+# pnpm 10 reads build-script and other settings from this file.
+# These packages ship native binaries / install scripts that must run;
+# pnpm skips build scripts by default, which breaks `vite build`.
+onlyBuiltDependencies:
+  - esbuild
+  - '@parcel/watcher'
+  - svelte-preprocess
