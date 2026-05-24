@@ -11,6 +11,7 @@
     cpuHashrate,
     gpuHashrate,
     utilization,
+    appleSilicon,
   } from '../store'
   import { getBalance } from '../server/unMineable'
   import IconRefresh from '../components/icons/Refresh.svelte'
@@ -111,10 +112,13 @@
     }
   }
 
+  // GPU mining (Thinminerpro / Metal) only works on Apple Silicon.
+  $: canStart = $form.cpuEnabled || ($form.gpuEnabled && $appleSilicon)
+
   function enabledMiners() {
     const miners = []
     if ($form.cpuEnabled) miners.push('xmrig')
-    if ($form.gpuEnabled) miners.push('thinminerpro')
+    if ($form.gpuEnabled && $appleSilicon) miners.push('thinminerpro')
     return miners
   }
 
@@ -220,15 +224,24 @@
       />
       CPU — XMRig<span class="text-gray-400 ml-1">· RandomX</span>
     </label>
-    <label class="flex items-center text-sm cursor-pointer select-none">
+    <label
+      class="flex items-center text-sm select-none {$appleSilicon
+        ? 'cursor-pointer'
+        : 'opacity-50 cursor-not-allowed'}"
+    >
       <input
         type="checkbox"
         class="mr-2"
         bind:checked={$form.gpuEnabled}
-        disabled={$isMining}
+        disabled={$isMining || !$appleSilicon}
       />
       GPU — Thinminerpro<span class="text-gray-400 ml-1">· KawPow</span>
     </label>
+    {#if !$appleSilicon}
+      <p class="m-0 mt-1 text-xs text-gray-400">
+        GPU mining requires an Apple Silicon Mac (M-series).
+      </p>
+    {/if}
   </div>
 
   <!-- Hashrate + Start/Stop -->
@@ -253,7 +266,7 @@
     {#if !$isMining}
       <sl-button
         type="primary"
-        disabled={$preparing || (!$form.cpuEnabled && !$form.gpuEnabled)}
+        disabled={$preparing || !canStart}
         on:click={handleStart}>Start</sl-button
       >
     {:else}

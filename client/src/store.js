@@ -27,4 +27,7 @@ export const utilization = writable({ cpu: -1, gpu: -1 })
 // calculated in `FormSettings.svelte`
 export const cpuCores = writable(100)
 
+// true on Apple Silicon Macs; GPU mining is only supported there
+export const appleSilicon = writable(true)
+
 export const miningLogs = writable([])

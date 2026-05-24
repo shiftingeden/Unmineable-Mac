@@ -29,10 +29,12 @@ func RegisterIPCEvents(w webview.WebView) {
 		fmt.Println("emitPageReady")
 		w.Eval(fmt.Sprintf(`
         onPageReady({
-          cpuCores: %s
+          cpuCores: %s,
+          appleSilicon: %t
         })
         `,
 			fmt.Sprint(runtime.NumCPU()),
+			!IsIntel(),
 		))
 	})
 

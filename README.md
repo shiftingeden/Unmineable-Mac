@@ -13,6 +13,15 @@ Unmineable-Mac is a 3rd-party [unMineable](https://unmineable.com) client for
 macOS — it lets you mine cryptocurrency on your Mac through a simple UI. It is
 not affiliated with unMineable.
 
+## Screenshots
+
+<p>
+  <img src="screenshots/setup.png" width="250" alt="Coin and address setup" />
+  <img src="screenshots/mining.png" width="250" alt="Mining screen" />
+  <img src="screenshots/mining-log.png" width="250" alt="Mining with live log" />
+  <img src="screenshots/settings.png" width="250" alt="Settings" />
+</p>
+
 ## Highlights
 
 - [x] unMineable-flavoured UI, written in Go and Svelte
@@ -27,17 +36,20 @@ not affiliated with unMineable.
 
 ## Miners
 
-Unmineable-Mac can mine with either of two backends, chosen with the **CPU /
-GPU toggle** on the mining screen:
+Unmineable-Mac can mine with either backend — or **both at the same time** —
+using the CPU / GPU checkboxes on the mining screen:
 
-| Backend | Type | Algorithm | unMineable pool |
-| --- | --- | --- | --- |
-| [XMRig](https://github.com/xmrig/xmrig) `6.26.0` | CPU | RandomX | `rx.unmineable.com` |
-| [Thinminerpro](https://github.com/rezahussain/thinminerpro) | GPU (Metal) | KawPow | `kp.unmineable.com` |
+| Backend | Type | Algorithm | unMineable pool | Requires |
+| --- | --- | --- | --- | --- |
+| [XMRig](https://github.com/xmrig/xmrig) `6.26.0` | CPU | RandomX | `rx.unmineable.com` | Any Mac |
+| [Thinminerpro](https://github.com/rezahussain/thinminerpro) | GPU (Metal) | KawPow | `kp.unmineable.com` | **Apple Silicon** |
 
 RandomX is CPU-only by design, so GPU mining uses a different algorithm
-(KawPow) via Thinminerpro, which runs on the Apple Silicon GPU through Metal.
-Use the toggle to compare hashrate and rewards between the two on your machine.
+(KawPow) via Thinminerpro, which runs on the GPU through Metal.
+
+> ⚠️ **GPU mining requires an Apple Silicon Mac (M-series).** Thinminerpro is
+> a Metal miner; on Intel Macs the GPU option is disabled and only the CPU
+> miner (XMRig) is available.
 
 > ⚠️ Mining on a Mac is generally not profitable and runs the chips hot. Treat
 > this as something to experiment with on hardware you already own.

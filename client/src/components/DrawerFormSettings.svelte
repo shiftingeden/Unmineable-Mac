@@ -5,8 +5,11 @@
   import Drawer from './Drawer.svelte'
   import FormSettings from './FormSettings.svelte'
   import { parseFormData } from '../util/form'
-  import { form, isMining } from '../store'
+  import { form, isMining, appleSilicon } from '../store'
   import { ipc } from '../ipc'
+  import pkg from '../../../package.json'
+
+  const version = pkg.version
 
   let drawerComp
   let formSettingsComp
@@ -28,12 +31,16 @@
     $form = { ...$form, ...data }
 
     if ($isMining) {
+      const miners = []
+      if ($form.cpuEnabled) miners.push('xmrig')
+      if ($form.gpuEnabled && $appleSilicon) miners.push('thinminerpro')
+
       ipc.listen('onMiningStopped', () => {
         ipc.listen('onMiningStarted', () => {
           saving = false
           drawerComp.hide()
         })
-        ipc.send('emitStartMining', JSON.stringify($form))
+        ipc.send('emitStartMining', JSON.stringify({ ...$form, miners }))
       })
       saving = true
       ipc.send('emitStopMining')
@@ -61,6 +68,8 @@
   on:after-hide={resetFormData}
 >
   <FormSettings bind:this={formSettingsComp} on:change={onFormChange} />
+
+  <p class="px-2 pt-6 text-xs text-gray-400">Unmineable-Mac v{version}</p>
 
   <sl-button
     slot="footer"

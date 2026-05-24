@@ -1,8 +1,14 @@
 .idea/
 node_modules
 .ds_store
+.DS_Store
 out/
 dist/
+pnpm-lock.yaml
+package-lock.json
+
+# stray macOS screenshots dropped in the repo root
+/Screenshot*.jpg
 
 # Miner binaries are fetched by scripts/fetchMiners.sh, not committed.
 assets/miner/xmrig

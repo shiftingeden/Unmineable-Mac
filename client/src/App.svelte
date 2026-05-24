@@ -7,7 +7,7 @@
   import { routes, Router } from './router'
   import { ipc } from './ipc'
   import { log } from './util/log'
-  import { cpuCores } from './store'
+  import { cpuCores, appleSilicon } from './store'
   import { checkUpdate } from './helper/checkUpdate'
   import { wsMiningLog } from './helper/wsMiningLog'
   import { common } from './helper/common'
@@ -15,6 +15,9 @@
   ipc.listen('onPageReady', (data) => {
     log('onPageReady', data)
     $cpuCores = data.cpuCores
+    if (typeof data.appleSilicon === 'boolean') {
+      $appleSilicon = data.appleSilicon
+    }
   })
   ipc.send('emitPageReady')
 
