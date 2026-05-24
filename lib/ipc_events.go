@@ -38,7 +38,8 @@ func RegisterIPCEvents(w webview.WebView) {
 
 	type Form struct {
 		Miners       []string `json:"miners"`
-		MinerName    string   `json:"minerName"`
+		CPUMinerName string   `json:"cpuMinerName"`
+		GPUMinerName string   `json:"gpuMinerName"`
 		Symbol       string   `json:"symbol"`
 		Address      string   `json:"address"`
 		ReferralCode string   `json:"referralCode"`
@@ -63,9 +64,14 @@ func RegisterIPCEvents(w webview.WebView) {
 				continue
 			}
 
+			minerName := form.CPUMinerName
+			if id == "thinminerpro" {
+				minerName = form.GPUMinerName
+			}
+
 			cmdStr, workDir, err := BuildMinerCommand(MinerForm{
 				Miner:        id,
-				MinerName:    form.MinerName,
+				MinerName:    minerName,
 				Symbol:       form.Symbol,
 				Address:      form.Address,
 				ReferralCode: form.ReferralCode,

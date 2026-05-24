@@ -15,6 +15,7 @@
   import { getBalance } from '../server/unMineable'
   import IconRefresh from '../components/icons/Refresh.svelte'
   import TopButtons from '../components/TopButtons.svelte'
+  import HashratesChart from '../components/HashratesChart.svelte'
   import Donate from '../components/Donate.svelte'
   import { ipc } from '../ipc'
   import * as router from 'svelte-spa-router'
@@ -260,6 +261,11 @@
         >Stop</sl-button
       >
     {/if}
+  </div>
+
+  <!-- Hashrate trend -->
+  <div class="mt-3">
+    <HashratesChart />
   </div>
 
   <!-- System load -->

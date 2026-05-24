@@ -16,7 +16,8 @@
 
   let tweakForm = {
     cpuUsage: $form.cpuUsage,
-    minerName: $form.minerName,
+    cpuMinerName: $form.cpuMinerName,
+    gpuMinerName: $form.gpuMinerName,
   }
 
   let formEl
@@ -43,13 +44,21 @@
 
 <sl-form bind:this={formEl} class="p-2">
   <sl-input
-    name="minerName"
+    name="cpuMinerName"
     class="mb-4"
-    label="Miner name"
-    value={tweakForm.minerName}
+    label="CPU miner name"
+    value={tweakForm.cpuMinerName}
+  />
+
+  <sl-input
+    name="gpuMinerName"
+    class="mb-4"
+    label="GPU miner name"
+    value={tweakForm.gpuMinerName}
   >
     <p slot="help-text" class="mt-2 text-xs text-gray-400">
-      The worker name shown on your unMineable dashboard. See
+      Worker names shown on your unMineable dashboard — each miner can have
+      its own. See
       <Link
         url="https://unmineable.com/support/article/how-to-setup-xmrig-for-cpu-mining"
         class="underline hover:text-indigo-500">unMineable's XMRig guide</Link

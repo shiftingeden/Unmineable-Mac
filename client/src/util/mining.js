@@ -12,9 +12,11 @@ export function getHashrate(log = '') {
   // XMRig (CPU / RandomX):
   // [time] miner speed 10s/60s/15m 353.6 n/a n/a H/s max 359.0 H/s
   if (/miner/.test(log) && /speed/.test(log)) {
+    // "speed 10s/60s/15m 662.9 n/a n/a H/s max ..." — token [0] is the
+    // "10s/60s/15m" label; token [1] is the 10-second hash-rate.
     const m = /speed(.*)max/.exec(log)
     if (m) {
-      const n = Number(m[1].trim().split(/\s+/)[0])
+      const n = Number(m[1].trim().split(/\s+/)[1])
       if (!Number.isNaN(n)) return { kind: 'cpu', value: n }
     }
     return null

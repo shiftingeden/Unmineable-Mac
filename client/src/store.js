@@ -4,8 +4,9 @@ export const form = writable({
   // miners — either or both may run at the same time
   cpuEnabled: true,
   gpuEnabled: false,
-  // worker name shown on the unMineable dashboard
-  minerName: 'UnmineableMac',
+  // worker names shown on the unMineable dashboard — one per miner
+  cpuMinerName: 'UnmineableMac-CPU',
+  gpuMinerName: 'UnmineableMac-GPU',
   symbol: '',
   address: '',
   referralCode: '',
