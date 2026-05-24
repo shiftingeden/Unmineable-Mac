@@ -17,7 +17,10 @@
     {
       component: IconGitHub,
       onClick: () => {
-        ipc.send('emitOpenURL', 'https://github.com/2nthony/macmineable')
+        ipc.send(
+          'emitOpenURL',
+          'https://github.com/shiftingeden/Unmineable-Mac/tree/changes',
+        )
       },
     },
     {
@@ -44,7 +47,7 @@
 
 <a
   bind:this={emailEl}
-  href="mailto:ijoec123@gmail.com?subject=[macMineable] Feedback"
+  href="mailto:shiftingeden@gmail.com?subject=[Unmineable-Mac] Feedback"
   class="hidden">Feedback</a
 >
 

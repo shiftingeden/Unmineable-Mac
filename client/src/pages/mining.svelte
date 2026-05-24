@@ -1,6 +1,7 @@
 <script>
   import '@shoelace-style/shoelace/dist/components/button/button'
   import '@shoelace-style/shoelace/dist/components/tooltip/tooltip'
+  import { afterUpdate } from 'svelte'
   import { tryOnMount, tryOnDestroy } from '@svelte-use/core'
   import { form, isMining, preparing, miningLogs, hashrates } from '../store'
   import { getBalance } from '../server/unMineable'
@@ -12,9 +13,9 @@
   import Drawer from '../components/Drawer.svelte'
   import MinerToggle from '../components/MinerToggle.svelte'
   import TopButtons from '../components/TopButtons.svelte'
+  import Donate from '../components/Donate.svelte'
   import { log } from '../util/log'
-  import { getHashrate } from '../util/mining'
-  import Link from '../components/Link.svelte'
+  import { getHashrate, formatHashrate, resetHashrate } from '../util/mining'
 
   let dialogLogsData = []
 
@@ -41,6 +42,18 @@
   let balance = {}
   $: currentHashrate = $hashrates[$hashrates.length - 1]
   let refreshingBalance = false
+
+  // Inline live log panel (toggled by a checkbox on the mining screen).
+  let showLiveLog = false
+  let liveLogEl
+  $: liveLogText =
+    dialogLogsData.slice(-300).join('\n') || 'Waiting for miner output…'
+
+  afterUpdate(() => {
+    if (showLiveLog && liveLogEl) {
+      liveLogEl.scrollTop = liveLogEl.scrollHeight
+    }
+  })
 
   function handleGetBalance() {
     log('page mining:', 'refreshing balance.')
@@ -69,6 +82,7 @@
   function handleStart() {
     log('page mining:', 'start')
 
+    resetHashrate()
     ipc.listen('onMiningStarted', () => {
       $isMining = true
     })
@@ -190,22 +204,28 @@
         {#if $isMining && !currentHashrate}
           <span class="text-gray-600">Running...</span>
         {:else}
-          <span>{currentHashrate || 0} h</span>
+          <span>{formatHashrate(currentHashrate)}</span>
         {/if}
       </div>
     </div>
+
+    <div class="mb-4">
+      <label
+        class="flex items-center text-xs text-gray-500 cursor-pointer select-none"
+      >
+        <input type="checkbox" bind:checked={showLiveLog} class="mr-2" />
+        Show live log
+      </label>
+      {#if showLiveLog}
+        <pre
+          bind:this={liveLogEl}
+          class="mt-2 h-40 overflow-auto select-text bg-gray-50 dark:bg-gray-900 text-xs rounded-md p-2 m-0">{liveLogText}</pre>
+      {/if}
+    </div>
+
     <div class="flex justify-between items-end">
       <div class="flex flex-col">
-        <sl-tooltip
-          content="Please considering buy me a coffee, it's important to me 🙏"
-          placement="top"
-        >
-          <Link
-            url="https://2nthony.notion.site/Buy-2nthony-Coffee-d67a508cd58e4896bfb50c7112f93f51"
-            class="text-xs text-gray-500 m-0 underline hover:text-indigo-500"
-            >BuyMeACoffee 🙏</Link
-          >
-        </sl-tooltip>
+        <Donate />
       </div>
       <div class="flex items-center">
         <sl-tooltip content="Log" placement="top">

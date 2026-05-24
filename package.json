@@ -1,5 +1,5 @@
 {
-  "name": "macmineable",
+  "name": "unmineable-mac",
   "version": "0.16.0",
   "scripts": {
     "dev": "vite",

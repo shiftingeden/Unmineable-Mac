@@ -21,10 +21,9 @@ type MinerForm struct {
 //
 //	COIN:ADDRESS.WORKER#REFERRAL
 //
-// The "macMineable" worker name is kept for backwards compatibility with the
-// stats the original app reported.
+// "UnmineableMac" is the worker name; it shows up in the unMineable dashboard.
 func unmineableUser(f MinerForm) string {
-	return fmt.Sprintf("%s:%s.macMineable#%s", f.Symbol, f.Address, f.ReferralCode)
+	return fmt.Sprintf("%s:%s.UnmineableMac#%s", f.Symbol, f.Address, f.ReferralCode)
 }
 
 // minerAssetDir is the directory that holds the bundled miner binaries.
@@ -52,8 +51,10 @@ func xmrigBinary() string {
 // buildXMRigCommand returns the shell command that runs XMRig against
 // unMineable's RandomX (CPU) pool.
 func buildXMRigCommand(f MinerForm) string {
+	// --print-time=5 makes XMRig print its hashrate summary every 5s (default
+	// is 60s) so the UI hashrate updates quickly.
 	return fmt.Sprintf(
-		`"%s" --no-color --url=rx.unmineable.com:3333 --algo=rx --pass=x --keepalive --user=%s --cpu-max-threads-hint=%d`,
+		`"%s" --no-color --print-time=5 --url=rx.unmineable.com:3333 --algo=rx --pass=x --keepalive --user=%s --cpu-max-threads-hint=%d`,
 		xmrigBinary(),
 		unmineableUser(f),
 		f.CPUUsage,

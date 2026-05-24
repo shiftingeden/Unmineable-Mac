@@ -1,42 +1,34 @@
-> 🛠️ This is a maintained fork of [2nthony/macmineable](https://github.com/2nthony/macmineable),
-> which the original author stopped developing after switching to an M1 Mac
-> ("can not connect to unmineable server"). This fork upgrades XMRig and adds a
-> selectable GPU miner — see [Miners](#miners) below.
+# Unmineable-Mac
 
-# macMineable (unMineable for macOS)
-
-![](https://img.shields.io/github/v/release/2nthony/macmineable?label=)
-![](https://img.shields.io/github/downloads/2nthony/macmineable/total)
-
-<a href="https://www.producthunt.com/posts/macmineable?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-macmineable" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=305377&theme=light" alt="macMineable - unMineable for macOS, 3rd-party. | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+> 🛠️ A maintained fork of [2nthony/macmineable](https://github.com/2nthony/macmineable).
+> The original author stopped developing it after switching to an M1 Mac
+> ("can not connect to unmineable server"). This fork revives it: upgraded
+> XMRig, a selectable GPU miner, faster hashrate readout, and a cleaner UI.
 
 _macOS 11 or above_
 
 ## Introduction
 
-macMineable is the unMineable 3rd-party app that can let you mining cryptocurrency on macOS with ease.
-
-## Sponsor
-
-**[Don Café](https://don-cafe.aotunote.com) - A web-widget to collect your all donation links in one button.**
+Unmineable-Mac is a 3rd-party [unMineable](https://unmineable.com) client for
+macOS — it lets you mine cryptocurrency on your Mac through a simple UI. It is
+not affiliated with unMineable.
 
 ## Highlights
 
-- [x] **unMineable UI flavoured**
-- [x] Written in Go and Svelte
+- [x] unMineable-flavoured UI, written in Go and Svelte
+- [x] **Selectable CPU and GPU miners** — switch with one toggle
+- [x] XMRig `6.26.0` for CPU mining (RandomX)
+- [x] Thinminerpro for GPU mining (KawPow / Metal) on Apple Silicon
 - [x] Dark mode
-- [x] Selectable CPU **and** GPU miners
-- [x] Fast and lite
-- [x] All unMineable coins are supported
+- [x] All unMineable coins supported
 - [x] Tweak CPU usage for mining
-- [x] Check new release available
-- [x] Form memorize
-- [x] Log reporter
+- [x] Live hashrate, balance, and an optional in-app log panel
+- [x] Form memory and update check
 
 ## Miners
 
-macMineable can mine with either of two backends, chosen with the **CPU / GPU
-toggle** on the mining screen:
+Unmineable-Mac can mine with either of two backends, chosen with the **CPU /
+GPU toggle** on the mining screen:
 
 | Backend | Type | Algorithm | unMineable pool |
 | --- | --- | --- | --- |
@@ -62,14 +54,6 @@ npm run fetch:miners
 This downloads XMRig (`6.26.0`, Intel + Apple Silicon) and Thinminerpro into
 `assets/miner/`.
 
-### About the original "can not connect" bug
-
-The original app shipped XMRig `6.17.0` (built April 2022). That stale build
-fails on current Apple Silicon macOS — the RandomX JIT and hardened-runtime
-behaviour changed in later XMRig releases. Upgrading to XMRig `6.26.0` is the
-primary fix; this fork also surfaces miner `stderr` in the log drawer so launch
-failures are visible. Verify on your own Mac.
-
 ## Build from source
 
 ```sh
@@ -78,42 +62,38 @@ npm run fetch:miners   # download miner binaries into assets/miner/
 npm run build:app      # build the Svelte UI + Go app into out/
 ```
 
-## Download
+The built `Unmineable-Mac.app` lands in `out/`.
 
-Download in [Releases page](https://github.com/2nthony/macmineable/releases).
+## What changed in this fork
+
+- Upgraded XMRig `6.17.0` → `6.26.0` — the stale build was the cause of the
+  original "can not connect" failure on Apple Silicon
+- Added a **CPU / GPU miner toggle** on the mining screen
+- Added **Thinminerpro** (GPU / KawPow via Metal) for Apple Silicon
+- Faster hashrate updates — XMRig reports every 5s, and a GPU hashrate is
+  derived from Thinminerpro's output
+- Bigger, **resizable** window with an optional inline **live-log panel**
+- Miner `stderr` is surfaced in the logs so launch failures are visible
+- Replaced "Buy Me a Coffee" with a **Donate** button (Litecoin)
+- Removed the promotion banner and sponsor sections
+- Rebranded to **Unmineable-Mac**
 
 ## Notices
 
-Since `v0.10.0` you need to read [this release](https://github.com/2nthony/macmineable/releases/tag/v0.10.0).
+The app runs a local webserver on `127.0.0.1:47261` to render the UI — make
+sure that host/port is free.
 
-We create a webserver with the host `127.0.0.1:47261` to render the UI, so make sure this host is not occupied.
+Press **Stop** before quitting while mining, so the miner process is shut
+down cleanly.
 
-### Tested devices
-
-- Macbook Pro 2015 with Intel I5 chip, big sur 11.5.2
-- Macbook 12-inch with Intel M-5Y31 chip, big sur 11.1
-- Thanks to [@yoobanz](https://twitter.com/yoobandz) helping me tested on M1 device. https://twitter.com/yoobandz/status/1430951939177603079
-
-### Issues
-
-When you have issues with running, read these below may help:
-
-<details><summary>"xmrig" cannot be opened because the developer can not be verified.</summary>
-
-![](https://cdn.jsdelivr.net/gh/2nthony/statics@main/uPic/Wp0a7nt8ebm9.jpg)
-![](https://cdn.jsdelivr.net/gh/2nthony/statics@main/uPic/RKucH35GQxQl.jpg)
-![](https://cdn.jsdelivr.net/gh/2nthony/statics@main/uPic/YkYIDNGJTmnE.jpg)
-
-</details>
-
-### Don't quit the app is mining
-
-Press the `Stop` button first. If you did, read [this](https://github.com/2nthony/macmineable/issues/10).
-
-## Sponsors
-
-[![sponsors](https://cdn.jsdelivr.net/gh/2nthony/sponsors-image/sponsors.svg)](https://github.com/sponsors/2nthony)
+Miner binaries are unsigned third-party software; `fetchMiners.sh` clears the
+macOS quarantine flag, but Gatekeeper may still prompt on first launch — allow
+them in System Settings if needed.
 
 ## LICENSE
 
-GNU GPL v3 © [2nthony](https://github.com/2nthony).
+GNU GPL v3. Originally © [2nthony](https://github.com/2nthony); this fork is
+maintained by [shiftingeden](https://github.com/shiftingeden).
+
+As a derivative of GPL-v3 software, this fork **must** remain under GPL v3 —
+that is a requirement of the license, so the `LICENSE` file stays in place.

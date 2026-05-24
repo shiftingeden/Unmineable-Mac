@@ -23,8 +23,10 @@ set -eu
 XMRIG_VERSION="6.26.0"
 
 # Thinminerpro release assets (see https://github.com/rezahussain/thinminerpro).
-# A newer 2022_09_04 build exists; swap these URLs if you want to try it.
-THINMINERPRO_ARM_URL="https://github.com/rezahussain/thinminerpro/releases/download/2022_03_12_arm_release/2022_03_12_arm_release.zip"
+# The 2022_09_04 build is the one that actually mines on Apple Silicon (M-series);
+# earlier builds trap while building the KawPow cache. The Intel build is the
+# last Intel-specific release and is best-effort only.
+THINMINERPRO_ARM_URL="https://github.com/rezahussain/thinminerpro/releases/download/2022_09_04/thinminerpro.zip"
 THINMINERPRO_INTEL_URL="https://github.com/rezahussain/thinminerpro/releases/download/2022_02_20_intel/thinminerpro_intel.zip"
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"

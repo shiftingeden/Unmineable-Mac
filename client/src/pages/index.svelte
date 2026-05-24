@@ -6,12 +6,12 @@
 </script>
 
 <hgroup>
-  <h1 class="text-indigo-500">macMineable</h1>
+  <h1 class="text-indigo-500">Unmineable-Mac</h1>
   <h6 class="text-xs text-green-500">
-    3rd-party unMineable for macOS. Made by
+    3rd-party unMineable client for macOS. Forked from
     <Link
-      url="https://twitter.com/_2nthony"
-      class="underline hover:text-indigo-500">2nthony</Link
+      url="https://github.com/2nthony/macmineable"
+      class="underline hover:text-indigo-500">macMineable</Link
     >.
   </h6>
 </hgroup>
