@@ -127,7 +127,7 @@
       <div class="mt-6">
         <h5 class="mb-1">Address</h5>
         <div class="flex items-center justify-between">
-          <sl-tooltip placement="top" content={$form.address}>
+          <sl-tooltip placement="top" hoist content={$form.address}>
             <p
               class="
                 text-gray-500 text-xs
@@ -228,7 +228,7 @@
         <Donate />
       </div>
       <div class="flex items-center">
-        <sl-tooltip content="Log" placement="top">
+        <sl-tooltip content="Log" placement="top" hoist>
           <IconFileList
             class="w-6 mr-4 cursor-pointer"
             on:click={logDrawerEl.show}

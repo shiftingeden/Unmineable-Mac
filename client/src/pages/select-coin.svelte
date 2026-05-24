@@ -105,6 +105,7 @@
     class="my-4"
     label="Select a coin or token"
     required
+    hoist
     bind:this={selectCoinEl}
   >
     {#each unMineableCoins as coin (coin[1])}
