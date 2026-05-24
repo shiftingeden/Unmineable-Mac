@@ -41,7 +41,7 @@ toggle** on the mining screen:
 | Backend | Type | Algorithm | unMineable pool |
 | --- | --- | --- | --- |
 | [XMRig](https://github.com/xmrig/xmrig) `6.26.0` | CPU | RandomX | `rx.unmineable.com` |
-| [Thinminerpro](https://github.com/rezahussain/thinminerpro) | GPU (Metal) | KawPow | `kawpow.unmineable.com` |
+| [Thinminerpro](https://github.com/rezahussain/thinminerpro) | GPU (Metal) | KawPow | `kp.unmineable.com` |
 
 RandomX is CPU-only by design, so GPU mining uses a different algorithm
 (KawPow) via Thinminerpro, which runs on the Apple Silicon GPU through Metal.

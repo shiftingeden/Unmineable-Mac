@@ -103,8 +103,10 @@ if [ ! -f "$TM_DIR/config.json" ]; then
   cat > "$TM_DIR/config.json" <<'EOF'
 {
   "user": "REPLACED_AT_RUNTIME",
-  "host": "kawpow.unmineable.com",
-  "port": 3333
+  "chosenURL": "kp.unmineable.com",
+  "chosenPort": 3333,
+  "deviceNumber": 0,
+  "intensity": 10371840
 }
 EOF
 fi

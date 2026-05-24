@@ -65,14 +65,21 @@ func buildXMRigCommand(f MinerForm) string {
 //
 // Thinminerpro is config-file driven rather than CLI-flag driven: it reads a
 // config.json sitting next to the binary and must be launched from its own
-// directory. We patch the config.json with the user's unMineable worker
+// directory. We patch that config.json with the user's unMineable worker
 // string before launching.
 //
-// NOTE: Thinminerpro's exact config.json schema is not formally documented.
-// patchThinminerproConfig preserves any keys already present in the shipped
-// config and only sets the worker/pool keys, so it stays correct even if the
-// shipped schema differs. Verify against the real config.json after running
-// scripts/fetchMiners.sh.
+// The shipped config.json looks like:
+//
+//	{
+//	  "user": "RVN:<address>.<worker>",
+//	  "chosenURL": "kp.unmineable.com",
+//	  "chosenPort": 3333,
+//	  "deviceNumber": 0,
+//	  "intensity": 10371840
+//	}
+//
+// patchThinminerproConfig only rewrites the worker/pool keys and preserves
+// everything else (deviceNumber, intensity, ...).
 // ---------------------------------------------------------------------------
 
 func thinminerproDir() string {
@@ -98,16 +105,16 @@ func patchThinminerproConfig(dir string, f MinerForm) error {
 		_ = json.Unmarshal(raw, &cfg)
 	}
 
-	// Worker identity. Thinminerpro's README documents this key as "user".
+	// Worker identity (unMineable-style: COIN:ADDRESS.WORKER#REFERRAL).
 	cfg["user"] = unmineableUser(f)
 
-	// Point at unMineable's KawPow pool only if the shipped config does not
-	// already define a pool endpoint.
-	_, hasHost := cfg["host"]
-	_, hasURL := cfg["url"]
-	if !hasHost && !hasURL {
-		cfg["host"] = "kawpow.unmineable.com"
-		cfg["port"] = 3333
+	// Ensure the unMineable KawPow pool is configured. Thinminerpro's
+	// config.json uses the keys "chosenURL" / "chosenPort".
+	if _, ok := cfg["chosenURL"]; !ok {
+		cfg["chosenURL"] = "kp.unmineable.com"
+	}
+	if _, ok := cfg["chosenPort"]; !ok {
+		cfg["chosenPort"] = 3333
 	}
 
 	out, err := json.MarshalIndent(cfg, "", "  ")
