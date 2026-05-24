@@ -1,10 +1,11 @@
 {
   "name": "macmineable",
-  "version": "0.15.2",
+  "version": "0.16.0",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "build:app": "npm run build && ./build.sh",
+    "fetch:miners": "sh scripts/fetchMiners.sh",
     "test": "ava --verbose",
     "push": "git push && git push --tags",
     "release": "node scripts/release.js && git push --follow-tags",

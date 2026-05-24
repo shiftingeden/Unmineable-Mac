@@ -21,6 +21,19 @@ func Ternay(cond bool, res1 interface{}, res2 interface{}) interface{} {
 	}
 }
 
+// JSEscape escapes a string so it can be safely embedded inside a
+// double-quoted JavaScript string literal passed to webview.Eval.
+func JSEscape(s string) string {
+	r := strings.NewReplacer(
+		`\`, `\\`,
+		`"`, `\"`,
+		"\n", `\n`,
+		"\r", `\r`,
+		"\t", `\t`,
+	)
+	return r.Replace(s)
+}
+
 // https://tehub.com/a/44BceBfRK0
 func isRunBuild() bool {
 	tempDir := os.TempDir()

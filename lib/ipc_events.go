@@ -13,7 +13,6 @@ import (
 // client events
 func RegisterIPCEvents(w webview.WebView) {
 	var miningProcess *exec.Cmd
-	minerPath := Ternay(IsIntel(), "assets/miner/xmrig", "assets/miner/xmrig-m1")
 
 	w.Bind("emitPageReady", func() {
 		fmt.Println("emitPageReady")
@@ -27,6 +26,7 @@ func RegisterIPCEvents(w webview.WebView) {
 	})
 
 	type Form struct {
+		Miner        string `json:"miner"`
 		Symbol       string `json:"symbol"`
 		Address      string `json:"address"`
 		ReferralCode string `json:"referralCode"`
@@ -44,11 +44,21 @@ func RegisterIPCEvents(w webview.WebView) {
 			return
 		}
 
-		process, err := RunCommand(
-			fmt.Sprintf(`%s --no-color --url=rx.unmineable.com:3333 --algo=rx --pass=x --keepalive --user=%s:%s.macMineable#%s --cpu-max-threads-hint=%s`, minerPath, form.Symbol, form.Address, form.ReferralCode, fmt.Sprint(form.CPUUsage)),
-		)
+		cmdStr, err := BuildMinerCommand(MinerForm{
+			Miner:        form.Miner,
+			Symbol:       form.Symbol,
+			Address:      form.Address,
+			ReferralCode: form.ReferralCode,
+			CPUUsage:     form.CPUUsage,
+		})
 		if err != nil {
-			w.Eval(fmt.Sprintf(`onMiningStartedError("%s")`, err))
+			w.Eval(fmt.Sprintf(`onMiningStartedError("%s")`, JSEscape(err.Error())))
+			return
+		}
+
+		process, err := RunCommand(cmdStr)
+		if err != nil {
+			w.Eval(fmt.Sprintf(`onMiningStartedError("%s")`, JSEscape(err.Error())))
 			return
 		}
 

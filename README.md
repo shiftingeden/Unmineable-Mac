@@ -1,5 +1,7 @@
-> ⚡️ This is not working anymore, since I switched my device to Macbook Air M1, so I had to stop the development.  
-> My case is: can not connect to unmineable server.
+> 🛠️ This is a maintained fork of [2nthony/macmineable](https://github.com/2nthony/macmineable),
+> which the original author stopped developing after switching to an M1 Mac
+> ("can not connect to unmineable server"). This fork upgrades XMRig and adds a
+> selectable GPU miner — see [Miners](#miners) below.
 
 # macMineable (unMineable for macOS)
 
@@ -23,13 +25,58 @@ macMineable is the unMineable 3rd-party app that can let you mining cryptocurren
 - [x] **unMineable UI flavoured**
 - [x] Written in Go and Svelte
 - [x] Dark mode
-- [x] XMRig under the hood
+- [x] Selectable CPU **and** GPU miners
 - [x] Fast and lite
 - [x] All unMineable coins are supported
 - [x] Tweak CPU usage for mining
 - [x] Check new release available
 - [x] Form memorize
 - [x] Log reporter
+
+## Miners
+
+macMineable can mine with either of two backends, chosen with the **CPU / GPU
+toggle** on the mining screen:
+
+| Backend | Type | Algorithm | unMineable pool |
+| --- | --- | --- | --- |
+| [XMRig](https://github.com/xmrig/xmrig) `6.26.0` | CPU | RandomX | `rx.unmineable.com` |
+| [Thinminerpro](https://github.com/rezahussain/thinminerpro) | GPU (Metal) | KawPow | `kawpow.unmineable.com` |
+
+RandomX is CPU-only by design, so GPU mining uses a different algorithm
+(KawPow) via Thinminerpro, which runs on the Apple Silicon GPU through Metal.
+Use the toggle to compare hashrate and rewards between the two on your machine.
+
+> ⚠️ Mining on a Mac is generally not profitable and runs the chips hot. Treat
+> this as something to experiment with on hardware you already own.
+
+### Fetching the miner binaries
+
+The miner binaries are **not** committed to this repo. Fetch them before
+building:
+
+```sh
+npm run fetch:miners
+```
+
+This downloads XMRig (`6.26.0`, Intel + Apple Silicon) and Thinminerpro into
+`assets/miner/`.
+
+### About the original "can not connect" bug
+
+The original app shipped XMRig `6.17.0` (built April 2022). That stale build
+fails on current Apple Silicon macOS — the RandomX JIT and hardened-runtime
+behaviour changed in later XMRig releases. Upgrading to XMRig `6.26.0` is the
+primary fix; this fork also surfaces miner `stderr` in the log drawer so launch
+failures are visible. Verify on your own Mac.
+
+## Build from source
+
+```sh
+npm install
+npm run fetch:miners   # download miner binaries into assets/miner/
+npm run build:app      # build the Svelte UI + Go app into out/
+```
 
 ## Download
 

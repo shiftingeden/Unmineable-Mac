@@ -1,6 +1,8 @@
 import { writable } from '@svelte-use/shared'
 
 export const form = writable({
+  // miner backend: 'xmrig' (CPU / RandomX) or 'thinminerpro' (GPU / KawPow)
+  miner: 'xmrig',
   symbol: '',
   address: '',
   referralCode: '',

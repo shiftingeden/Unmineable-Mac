@@ -6,7 +6,13 @@ OUT="out"
 APP="$NAME.app"
 VERSION=$(sed -n 's/.*"version": "\(.*\)",/\1/p' package.json)
 
-rm -r $OUT/$APP
+# Miner binaries are not committed — make sure they were fetched first.
+if [ ! -f "assets/miner/xmrig-m1" ] || [ ! -f "assets/miner/xmrig" ]; then
+  echo "Miner binaries missing. Run: npm run fetch:miners" >&2
+  exit 1
+fi
+
+rm -r $OUT/$APP 2>/dev/null || true
 
 echo "Creating macOS app structure"
 mkdir -p $OUT/$APP/Contents/{MacOS,Resources}

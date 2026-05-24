@@ -3,3 +3,10 @@ node_modules
 .ds_store
 out/
 dist/
+
+# Miner binaries are fetched by scripts/fetchMiners.sh, not committed.
+assets/miner/xmrig
+assets/miner/xmrig-m1
+assets/miner/thinminerpro/thinminerpro
+assets/miner/thinminerpro/thinminerpro-intel
+assets/miner/thinminerpro/config.json

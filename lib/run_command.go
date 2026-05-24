@@ -50,7 +50,14 @@ func RunCommand(c string) (*exec.Cmd, error) {
 		fmt.Printf("stdoutErr: %v\n", stdoutErr)
 		return cmd, stdoutErr
 	}
-	// stderr, _ := cmd.StderrPipe()
+	// Capture stderr too: when a miner crashes on launch (e.g. a stale XMRig
+	// build failing on Apple Silicon) the failure message is written here, so
+	// surfacing it makes connection/JIT errors visible in the log drawer.
+	stderr, stderrErr := cmd.StderrPipe()
+	if stderrErr != nil {
+		fmt.Printf("stderrErr: %v\n", stderrErr)
+		return cmd, stderrErr
+	}
 
 	if err := cmd.Start(); err != nil {
 		log.Printf("Error starting command: %s......", err.Error())
@@ -58,7 +65,7 @@ func RunCommand(c string) (*exec.Cmd, error) {
 	}
 
 	go asyncLog(stdout)
-	// go asyncLog(stderr)
+	go asyncLog(stderr)
 
 	/* if err := cmd.Wait(); err != nil {
 		log.Printf("Error waiting for command execution: %s......", err.Error())

@@ -47,4 +47,9 @@
     {step}
     value={tweakForm.cpuUsage}
   />
+  {#if $form.miner === 'thinminerpro'}
+    <p class="m-0 mt-2 text-xs text-gray-400">
+      The GPU miner (Thinminerpro) ignores this CPU usage setting.
+    </p>
+  {/if}
 </sl-form>

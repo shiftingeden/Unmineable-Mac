@@ -16,7 +16,7 @@
     getReferralCode,
     validateAddress,
   } from '../server/unMineable'
-  import { form, preparing, isMining } from '../store'
+  import { form, preparing } from '../store'
   import { parseFormData, setFormData } from '../util/form'
   import { getStorage, setStorage } from '../util/storage'
   import TopButtons from '../components/TopButtons.svelte'
@@ -44,12 +44,10 @@
           setStorage('form', $form)
           setStorage($form.symbol, $form.address)
 
-          ipc.listen('onMiningStarted', () => {
-            $preparing = false
-            $isMining = true
-            router.push('/mining')
-          })
-          ipc.send('emitStartMining', JSON.stringify($form))
+          // Mining is started from the mining screen, where the user can
+          // pick the CPU/GPU miner first.
+          $preparing = false
+          router.push('/mining')
         } else {
           createToast(
             `Your address does't exist on unMineable, please register it first.`,
@@ -142,6 +140,6 @@
     class="w-full mt-4"
     submit
     loading={$preparing}
-    disabled={$preparing}>Start</sl-button
+    disabled={$preparing}>Continue</sl-button
   >
 </sl-form>

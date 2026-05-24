@@ -10,6 +10,7 @@
   import IconFileList from '../components/icons/FileList.svelte'
   import HashratesChart from '../components/HashratesChart.svelte'
   import Drawer from '../components/Drawer.svelte'
+  import MinerToggle from '../components/MinerToggle.svelte'
   import TopButtons from '../components/TopButtons.svelte'
   import { log } from '../util/log'
   import { getHashrate } from '../util/mining'
@@ -171,6 +172,16 @@
   <HashratesChart />
 
   <div>
+    <div class="mb-3">
+      <div class="text-gray-500 mb-1">Miner</div>
+      <MinerToggle disabled={$isMining} />
+      {#if $form.miner === 'thinminerpro'}
+        <p class="m-0 mt-1 text-xs text-gray-400">
+          GPU mining (Metal) on unMineable's KawPow pool. CPU usage in advanced
+          settings does not apply.
+        </p>
+      {/if}
+    </div>
     <div class="mb-4">
       <div class="text-gray-500">Hashrate</div>
       <div class="text-4xl flex items-center">
