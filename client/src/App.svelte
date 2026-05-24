@@ -11,7 +11,6 @@
   import { checkUpdate } from './helper/checkUpdate'
   import { wsMiningLog } from './helper/wsMiningLog'
   import { common } from './helper/common'
-  import PromotionBanner from './components/PromotionBanner.svelte'
 
   ipc.listen('onPageReady', (data) => {
     log('onPageReady', data)
@@ -28,6 +27,4 @@
   <div class="p-6 flex-1 min-h-0 overflow-y-auto">
     <Router {routes} />
   </div>
-
-  <PromotionBanner />
 </main>
