@@ -3,10 +3,12 @@
   import { listen } from 'svelte/internal'
   import '@shoelace-style/shoelace/dist/components/form/form'
   import '@shoelace-style/shoelace/dist/components/range/range'
+  import '@shoelace-style/shoelace/dist/components/input/input'
 
   import { form, cpuCores } from '../store'
   import * as formUtils from '../util/form'
   import { useDispatch } from '../use/dispatch'
+  import Link from './Link.svelte'
 
   const { dispatch } = useDispatch()
 
@@ -14,6 +16,7 @@
 
   let tweakForm = {
     cpuUsage: $form.cpuUsage,
+    minerName: $form.minerName,
   }
 
   let formEl
@@ -39,6 +42,21 @@
 </script>
 
 <sl-form bind:this={formEl} class="p-2">
+  <sl-input
+    name="minerName"
+    class="mb-4"
+    label="Miner name"
+    value={tweakForm.minerName}
+  >
+    <p slot="help-text" class="mt-2 text-xs text-gray-400">
+      The worker name shown on your unMineable dashboard. See
+      <Link
+        url="https://unmineable.com/support/article/how-to-setup-xmrig-for-cpu-mining"
+        class="underline hover:text-indigo-500">unMineable's XMRig guide</Link
+      >.
+    </p>
+  </sl-input>
+
   <sl-range
     name="cpuUsage"
     label={`CPU Usage (${tweakForm.cpuUsage}%)`}
@@ -47,9 +65,9 @@
     {step}
     value={tweakForm.cpuUsage}
   />
-  {#if $form.miner === 'thinminerpro'}
+  {#if !$form.cpuEnabled}
     <p class="m-0 mt-2 text-xs text-gray-400">
-      The GPU miner (Thinminerpro) ignores this CPU usage setting.
+      CPU Usage only affects the CPU miner (XMRig), which is currently off.
     </p>
   {/if}
 </sl-form>

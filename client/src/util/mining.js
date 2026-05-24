@@ -2,22 +2,22 @@
 // so a GPU hash-rate can be derived from the gap between two batches.
 let lastNonceTime = null
 
-// getHashrate parses a miner log line and returns a hash-rate in H/s, or
-// undefined if the line carries no rate information.
+// getHashrate parses a single miner log line and returns
+// `{ kind: 'cpu' | 'gpu', value }` (value in H/s), or null if the line
+// carries no rate information.
 export function getHashrate(log = '') {
-  log = log.trim()
-  if (!log) return
+  log = (log || '').trim()
+  if (!log) return null
 
   // XMRig (CPU / RandomX):
   // [time] miner speed 10s/60s/15m 353.6 n/a n/a H/s max 359.0 H/s
   if (/miner/.test(log) && /speed/.test(log)) {
     const m = /speed(.*)max/.exec(log)
     if (m) {
-      const speed10s = m[1].trim().split(/\s+/)[0]
-      const n = Number(speed10s)
-      if (!Number.isNaN(n)) return n
+      const n = Number(m[1].trim().split(/\s+/)[0])
+      if (!Number.isNaN(n)) return { kind: 'cpu', value: n }
     }
-    return
+    return null
   }
 
   // Thinminerpro (GPU / KawPow) prints no speed line. It logs one line per
@@ -29,14 +29,16 @@ export function getHashrate(log = '') {
   if (tm) {
     const nonces = Number(tm[1])
     const t = new Date(tm[2].replace(' ', 'T') + 'Z').getTime()
-    let rate
+    let rate = null
     if (lastNonceTime != null) {
       const dt = (t - lastNonceTime) / 1000
       if (dt > 0 && dt < 120) rate = nonces / dt
     }
     lastNonceTime = t
-    return rate
+    return rate != null ? { kind: 'gpu', value: rate } : null
   }
+
+  return null
 }
 
 // resetHashrate clears the GPU rate state. Call it when mining (re)starts so

@@ -39,3 +39,6 @@ window.onMiningStopped = () => {
 window.onMiningStoppedError = (err) => {
   ipc.invoke('onMiningStoppedError', err)
 }
+window.onUtilization = (cpu, gpu) => {
+  ipc.invoke('onUtilization', cpu, gpu)
+}

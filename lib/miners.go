@@ -5,25 +5,47 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // MinerForm carries the user-provided mining parameters that are shared
 // across every supported miner backend.
 type MinerForm struct {
 	Miner        string // "xmrig" (CPU/RandomX) | "thinminerpro" (GPU/KawPow)
+	MinerName    string // worker name shown on the unMineable dashboard
 	Symbol       string
 	Address      string
 	ReferralCode string
 	CPUUsage     int
 }
 
-// unMineable identifies a worker with the pattern:
+// sanitizeWorker keeps only characters that are safe both as an unMineable
+// worker name and as part of a shell argument.
+func sanitizeWorker(s string) string {
+	var b strings.Builder
+	for _, r := range s {
+		if (r >= 'a' && r <= 'z') ||
+			(r >= 'A' && r <= 'Z') ||
+			(r >= '0' && r <= '9') ||
+			r == '-' || r == '_' {
+			b.WriteRune(r)
+		}
+	}
+	return b.String()
+}
+
+// unmineableUser identifies a worker with the pattern:
 //
 //	COIN:ADDRESS.WORKER#REFERRAL
 //
-// "UnmineableMac" is the worker name; it shows up in the unMineable dashboard.
+// The worker name comes from the user's "Miner name" setting and shows up in
+// the unMineable dashboard; it falls back to "UnmineableMac".
 func unmineableUser(f MinerForm) string {
-	return fmt.Sprintf("%s:%s.UnmineableMac#%s", f.Symbol, f.Address, f.ReferralCode)
+	worker := sanitizeWorker(f.MinerName)
+	if worker == "" {
+		worker = "UnmineableMac"
+	}
+	return fmt.Sprintf("%s:%s.%s#%s", f.Symbol, f.Address, worker, f.ReferralCode)
 }
 
 // minerAssetDir is the directory that holds the bundled miner binaries.

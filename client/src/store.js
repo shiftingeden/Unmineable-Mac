@@ -1,8 +1,11 @@
 import { writable } from '@svelte-use/shared'
 
 export const form = writable({
-  // miner backend: 'xmrig' (CPU / RandomX) or 'thinminerpro' (GPU / KawPow)
-  miner: 'xmrig',
+  // miners — either or both may run at the same time
+  cpuEnabled: true,
+  gpuEnabled: false,
+  // worker name shown on the unMineable dashboard
+  minerName: 'UnmineableMac',
   symbol: '',
   address: '',
   referralCode: '',
@@ -13,9 +16,14 @@ export const preparing = writable(false)
 
 export const isMining = writable(false)
 
-export const hashrates = writable([0, 0])
+// current hash-rate (H/s) for each miner backend
+export const cpuHashrate = writable(0)
+export const gpuHashrate = writable(0)
 
-// calculate step on `FormSettings.svelte`
+// system load as percentages; -1 means "unknown"
+export const utilization = writable({ cpu: -1, gpu: -1 })
+
+// calculated in `FormSettings.svelte`
 export const cpuCores = writable(100)
 
 export const miningLogs = writable([])

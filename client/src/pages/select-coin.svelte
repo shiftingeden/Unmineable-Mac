@@ -26,6 +26,10 @@
 
   const savedForm = getStorage('form') || {}
 
+  // Restore persisted settings (miner name, enabled miners, last coin/address)
+  // into the shared form store.
+  $form = { ...$form, ...savedForm }
+
   // Coin selection uses a native <select>. Shoelace's <sl-select> did not
   // render its options reliably in this build, so we use the platform
   // control, which always works.
