@@ -82,15 +82,15 @@ func buildXMRigCommand(f MinerForm) string {
 // everything else (deviceNumber, intensity, ...).
 // ---------------------------------------------------------------------------
 
+// thinminerproDir is the per-architecture directory holding the Thinminerpro
+// binary together with all of its resources (config.json, Metal shader
+// library, ...). scripts/fetchMiners.sh copies each release folder whole.
 func thinminerproDir() string {
-	return filepath.Join(minerAssetDir(), "thinminerpro")
-}
-
-func thinminerproBinary() string {
+	name := "thinminerpro"
 	if IsIntel() {
-		return "thinminerpro-intel"
+		name = "thinminerpro-intel"
 	}
-	return "thinminerpro"
+	return filepath.Join(minerAssetDir(), name)
 }
 
 // patchThinminerproConfig writes the user's unMineable worker string (and a
@@ -124,45 +124,48 @@ func patchThinminerproConfig(dir string, f MinerForm) error {
 	return os.WriteFile(path, out, 0644)
 }
 
-// buildThinminerproCommand patches the config and returns the shell command
-// that launches Thinminerpro from its own directory.
-func buildThinminerproCommand(f MinerForm) (string, error) {
-	dir := thinminerproDir()
+// buildThinminerproCommand patches the config and returns the command that
+// launches Thinminerpro plus the working directory it must run in.
+func buildThinminerproCommand(f MinerForm) (cmd string, dir string, err error) {
+	dir = thinminerproDir()
 
-	if _, err := os.Stat(filepath.Join(dir, thinminerproBinary())); err != nil {
-		return "", fmt.Errorf(
-			"Thinminerpro binary not found in %s — run scripts/fetchMiners.sh first",
+	if _, statErr := os.Stat(filepath.Join(dir, "thinminerpro")); statErr != nil {
+		return "", "", fmt.Errorf(
+			"Thinminerpro not found in %s — run scripts/fetchMiners.sh first",
 			dir,
 		)
 	}
 
-	if err := patchThinminerproConfig(dir, f); err != nil {
-		return "", fmt.Errorf("failed to write Thinminerpro config: %v", err)
+	if patchErr := patchThinminerproConfig(dir, f); patchErr != nil {
+		return "", "", fmt.Errorf("failed to write Thinminerpro config: %v", patchErr)
 	}
 
-	abs, err := filepath.Abs(dir)
-	if err != nil {
+	abs, absErr := filepath.Abs(dir)
+	if absErr != nil {
 		abs = dir
 	}
 
-	// Thinminerpro must run with its directory as the working directory so it
-	// can find config.json and its Metal shader resources.
-	return fmt.Sprintf(`cd "%s" && "./%s"`, abs, thinminerproBinary()), nil
+	// Run the binary directly (no `cd ... && ...`). A single-command shell
+	// exec()s into the miner, so the tracked PID is the miner itself and Stop
+	// can kill it. The working directory is applied by the caller via
+	// exec.Cmd.Dir, which is also where Thinminerpro finds config.json and its
+	// Metal shader resources.
+	return "./thinminerpro", abs, nil
 }
 
 // ---------------------------------------------------------------------------
 // Dispatch
 // ---------------------------------------------------------------------------
 
-// BuildMinerCommand returns the shell command for the miner selected in the
-// form. It defaults to XMRig (CPU) when no miner is specified.
-func BuildMinerCommand(f MinerForm) (string, error) {
+// BuildMinerCommand returns the shell command for the selected miner and the
+// working directory it should run in ("" = inherit). Defaults to XMRig (CPU).
+func BuildMinerCommand(f MinerForm) (cmd string, dir string, err error) {
 	switch f.Miner {
 	case "thinminerpro":
 		return buildThinminerproCommand(f)
 	case "xmrig", "":
-		return buildXMRigCommand(f), nil
+		return buildXMRigCommand(f), "", nil
 	default:
-		return "", fmt.Errorf("unknown miner: %q", f.Miner)
+		return "", "", fmt.Errorf("unknown miner: %q", f.Miner)
 	}
 }

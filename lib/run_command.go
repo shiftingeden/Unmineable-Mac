@@ -41,9 +41,12 @@ func asyncLog(reader io.ReadCloser) error {
 	}
 }
 
-func RunCommand(c string) (*exec.Cmd, error) {
+func RunCommand(c string, dir string) (*exec.Cmd, error) {
 	cmd := exec.Command("bash", "-c", c)
-	fmt.Printf("cmd.Args: %v\n", cmd.Args)
+	if dir != "" {
+		cmd.Dir = dir
+	}
+	fmt.Printf("cmd.Args: %v (dir: %q)\n", cmd.Args, dir)
 
 	stdout, stdoutErr := cmd.StdoutPipe()
 	if stdoutErr != nil {

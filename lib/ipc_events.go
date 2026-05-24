@@ -44,7 +44,7 @@ func RegisterIPCEvents(w webview.WebView) {
 			return
 		}
 
-		cmdStr, err := BuildMinerCommand(MinerForm{
+		cmdStr, workDir, err := BuildMinerCommand(MinerForm{
 			Miner:        form.Miner,
 			Symbol:       form.Symbol,
 			Address:      form.Address,
@@ -56,7 +56,7 @@ func RegisterIPCEvents(w webview.WebView) {
 			return
 		}
 
-		process, err := RunCommand(cmdStr)
+		process, err := RunCommand(cmdStr, workDir)
 		if err != nil {
 			w.Eval(fmt.Sprintf(`onMiningStartedError("%s")`, JSEscape(err.Error())))
 			return

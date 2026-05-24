@@ -7,6 +7,5 @@ dist/
 # Miner binaries are fetched by scripts/fetchMiners.sh, not committed.
 assets/miner/xmrig
 assets/miner/xmrig-m1
-assets/miner/thinminerpro/thinminerpro
-assets/miner/thinminerpro/thinminerpro-intel
-assets/miner/thinminerpro/config.json
+assets/miner/thinminerpro/
+assets/miner/thinminerpro-intel/

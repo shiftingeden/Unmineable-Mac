@@ -5,12 +5,15 @@
 # Run this on macOS once before `npm run build:app`. It populates
 # assets/miner/ with:
 #
-#   assets/miner/xmrig                  XMRig (Intel / x86_64)        — CPU / RandomX
-#   assets/miner/xmrig-m1               XMRig (Apple Silicon / arm64) — CPU / RandomX
-#   assets/miner/thinminerpro/          Thinminerpro                  — GPU / KawPow
-#       thinminerpro                    Apple Silicon build
-#       thinminerpro-intel              Intel build
-#       config.json                     pool/worker config (patched at runtime)
+#   assets/miner/xmrig                   XMRig (Intel / x86_64)        — CPU / RandomX
+#   assets/miner/xmrig-m1                XMRig (Apple Silicon / arm64) — CPU / RandomX
+#   assets/miner/thinminerpro/           Thinminerpro, Apple Silicon   — GPU / KawPow
+#   assets/miner/thinminerpro-intel/     Thinminerpro, Intel           — GPU / KawPow
+#
+# Each Thinminerpro folder holds the binary (named `thinminerpro`) plus all
+# of its release resources — config.json, the Metal shader library, etc. The
+# whole release folder is copied, because the miner traps on launch if its
+# resources are missing.
 #
 # The binaries are NOT committed to the repo — they are large and have their
 # own licenses. This script fetches them from the upstream GitHub releases.
@@ -26,12 +29,20 @@ THINMINERPRO_INTEL_URL="https://github.com/rezahussain/thinminerpro/releases/dow
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 MINER_DIR="$ROOT/assets/miner"
-TM_DIR="$MINER_DIR/thinminerpro"
 
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
-mkdir -p "$MINER_DIR" "$TM_DIR"
+mkdir -p "$MINER_DIR"
+
+# adhoc_sign re-signs a binary with an ad-hoc signature. Apple Silicon kills
+# binaries with a missing or invalid code signature ("Trace/BPT trap: 5"),
+# and copying a binary out of an archive can invalidate its signature.
+adhoc_sign() {
+  if command -v codesign >/dev/null 2>&1; then
+    codesign --force --sign - "$1" 2>/dev/null || true
+  fi
+}
 
 # ---------------------------------------------------------------------------
 # XMRig — CPU miner (RandomX)
@@ -56,6 +67,7 @@ fetch_xmrig() {
   fi
   cp "$bin" "$MINER_DIR/$dest"
   chmod +x "$MINER_DIR/$dest"
+  adhoc_sign "$MINER_DIR/$dest"
 }
 
 fetch_xmrig "arm64" "xmrig-m1"
@@ -67,40 +79,36 @@ fetch_xmrig "x64" "xmrig"
 echo "==> Downloading Thinminerpro (GPU / KawPow)"
 
 fetch_thinminerpro() {
-  url="$1"    # release zip url
-  dest="$2"   # output binary name (thinminerpro | thinminerpro-intel)
+  url="$1"      # release zip url
+  destdir="$2"  # output dir name (thinminerpro | thinminerpro-intel)
   label="$3"
 
-  echo "    - $label -> assets/miner/thinminerpro/$dest"
-  curl -L --fail --progress-bar -o "$TMP/$dest.zip" "$url"
+  echo "    - $label -> assets/miner/$destdir/"
+  curl -L --fail --progress-bar -o "$TMP/$destdir.zip" "$url"
 
-  mkdir -p "$TMP/$dest"
-  unzip -o -q "$TMP/$dest.zip" -d "$TMP/$dest"
+  mkdir -p "$TMP/$destdir"
+  unzip -o -q "$TMP/$destdir.zip" -d "$TMP/$destdir"
 
-  bin="$(find "$TMP/$dest" -type f -name thinminerpro | head -n1)"
+  bin="$(find "$TMP/$destdir" -type f -name thinminerpro | head -n1)"
   if [ -z "$bin" ]; then
     echo "ERROR: thinminerpro binary not found in the $label zip" >&2
     exit 1
   fi
-  cp "$bin" "$TM_DIR/$dest"
-  chmod +x "$TM_DIR/$dest"
 
-  # Keep the first config.json we find as the template the app patches.
-  if [ ! -f "$TM_DIR/config.json" ]; then
-    cfg="$(find "$TMP/$dest" -type f -name config.json | head -n1)"
-    [ -n "$cfg" ] && cp "$cfg" "$TM_DIR/config.json"
-  fi
-}
+  # Copy the WHOLE folder the binary lives in (resources, shaders, config).
+  srcdir="$(dirname "$bin")"
+  rm -rf "$MINER_DIR/$destdir"
+  mkdir -p "$MINER_DIR/$destdir"
+  cp -R "$srcdir"/. "$MINER_DIR/$destdir/"
 
-fetch_thinminerpro "$THINMINERPRO_ARM_URL" "thinminerpro" "Apple Silicon"
-fetch_thinminerpro "$THINMINERPRO_INTEL_URL" "thinminerpro-intel" "Intel"
+  chmod +x "$MINER_DIR/$destdir/thinminerpro"
+  adhoc_sign "$MINER_DIR/$destdir/thinminerpro"
 
-# Fallback config.json if the release archives did not ship one. macMineable
-# rewrites the "user" field at runtime; verify the key names against the real
-# Thinminerpro config if mining fails to connect.
-if [ ! -f "$TM_DIR/config.json" ]; then
-  echo "    - writing a fallback config.json"
-  cat > "$TM_DIR/config.json" <<'EOF'
+  # Provide a config.json if the release did not ship one. macMineable
+  # rewrites "user" (and ensures chosenURL/chosenPort) at runtime.
+  if [ ! -f "$MINER_DIR/$destdir/config.json" ]; then
+    echo "      (writing a fallback config.json)"
+    cat > "$MINER_DIR/$destdir/config.json" <<'EOF'
 {
   "user": "REPLACED_AT_RUNTIME",
   "chosenURL": "kp.unmineable.com",
@@ -109,13 +117,17 @@ if [ ! -f "$TM_DIR/config.json" ]; then
   "intensity": 10371840
 }
 EOF
-fi
+  fi
+}
+
+fetch_thinminerpro "$THINMINERPRO_ARM_URL" "thinminerpro" "Apple Silicon"
+fetch_thinminerpro "$THINMINERPRO_INTEL_URL" "thinminerpro-intel" "Intel"
 
 # ---------------------------------------------------------------------------
-# Clear the macOS quarantine flag so the unsigned third-party binaries can run.
+# Clear the macOS quarantine flag so the third-party binaries can run.
 # Gatekeeper may still prompt on first launch — allow them in System Settings.
 # ---------------------------------------------------------------------------
 xattr -dr com.apple.quarantine "$MINER_DIR" 2>/dev/null || true
 
 echo "==> Done. Miner binaries are in assets/miner/"
-ls -la "$MINER_DIR" "$TM_DIR"
+ls -la "$MINER_DIR"
