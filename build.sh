@@ -38,7 +38,25 @@ cat > $OUT/$APP/Contents/Info.plist << EOF
 EOF
 
 echo "Building Go app"
-go build -o $OUT/$APP/Contents/MacOS/$NAME
+
+# Locate the Go toolchain. `go` is not always on PATH for non-login shells,
+# so fall back to the usual Homebrew / official install locations.
+GO_BIN="$(command -v go || true)"
+if [ -z "$GO_BIN" ]; then
+  for p in /opt/homebrew/bin/go /usr/local/bin/go /usr/local/go/bin/go "$HOME/go/bin/go"; do
+    if [ -x "$p" ]; then GO_BIN="$p"; break; fi
+  done
+fi
+if [ -z "$GO_BIN" ]; then
+  echo "Go not found. Install it (brew install go) and make sure it is on PATH." >&2
+  exit 1
+fi
+
+"$GO_BIN" build -o $OUT/$APP/Contents/MacOS/$NAME
+if [ $? -ne 0 ]; then
+  echo "go build failed" >&2
+  exit 1
+fi
 
 echo "Copying files"
 cp -r icon.icns $OUT/$APP/Contents/Resources
