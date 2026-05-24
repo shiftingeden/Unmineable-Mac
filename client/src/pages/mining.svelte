@@ -109,7 +109,7 @@
   })
 </script>
 
-<section class="flex flex-col">
+<section class="flex flex-col h-full overflow-y-auto">
   <div>
     <div class="flex justify-between items-center">
       <div
