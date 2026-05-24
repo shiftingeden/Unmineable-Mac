@@ -95,7 +95,7 @@
   })
 </script>
 
-<section class="flex flex-col justify-between h-full">
+<section class="flex flex-col">
   <div>
     <div class="flex justify-between items-center">
       <div
@@ -169,7 +169,9 @@
     </div>
   </div>
 
-  <HashratesChart />
+  <div class="my-4">
+    <HashratesChart />
+  </div>
 
   <div>
     <div class="mb-3">

@@ -38,7 +38,7 @@ func runApp() {
 	lib.RegisterIPCEvents(w)
 
 	w.SetTitle("macMineable")
-	w.SetSize(400, 650, webview.HintFixed)
+	w.SetSize(400, 720, webview.HintNone)
 
 	createServer()
 

@@ -24,8 +24,8 @@
   common()
 </script>
 
-<main class="flex flex-col justify-between h-screen">
-  <div class="p-6">
+<main class="flex flex-col h-screen">
+  <div class="p-6 flex-1 min-h-0 overflow-y-auto">
     <Router {routes} />
   </div>
 
