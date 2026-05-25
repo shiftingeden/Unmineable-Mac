@@ -68,9 +68,20 @@ export function getHashrate(log = '') {
     return null
   }
 
-  // Thinminerpro (GPU / KawPow) prints no speed line. It logs one line per
-  // batch: "Computing <N> nonces starting at <X> <YYYY-MM-DD HH:MM:SS> +0000".
-  // The rate is the batch size divided by the time since the previous batch.
+  // kawpow-mac (GPU / KawPow) prints "[miner] N.NN MH/s baseNonce=…
+  // lastBatch=X.XXXs" every ~5s. It's the source-of-truth rate (millisecond
+  // accurate from inside the binary), so prefer it.
+  const km = /\[miner\]\s+([0-9]+(?:\.[0-9]+)?)\s*MH\/s/.exec(log)
+  if (km) {
+    const mh = Number(km[1])
+    if (!Number.isNaN(mh)) return { kind: 'gpu', value: mh * 1e6 }
+  }
+
+  // Legacy fallback for upstream Thinminerpro (Intel build), which prints no
+  // speed line — only "Computing <N> nonces starting at <X> <YYYY-MM-DD
+  // HH:MM:SS> +0000". The second-precision timestamp here means dt can
+  // collapse to 1s when batches are sub-second, underestimating by 2-3×;
+  // we only use this if no [miner] MH/s line has been seen.
   const tm = /Computing\s+(\d+)\s+nonces.*?(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})/.exec(
     log,
   )
