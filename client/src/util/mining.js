@@ -2,6 +2,52 @@
 // so a GPU hash-rate can be derived from the gap between two batches.
 let lastNonceTime = null
 
+// Accepted-share counters, reset on every (re)start of mining.
+let cpuAcceptedCount = 0
+let gpuAcceptedCount = 0
+
+// getShareEvent parses a single miner log line and returns
+// `{ kind: 'cpu' | 'gpu', accepted: true/false, count: <total accepted for that kind> }`
+// or null if the line doesn't carry share info.
+//
+// Formats it recognises:
+//   - XMRig (CPU):       `accepted (N/M ...)`            (N = total accepted so far)
+//   - kawpow-mac (GPU):  `[share] accepted`
+//   - kawpow-mac (GPU):  `[share] rejected: <reason>`
+export function getShareEvent(log = '') {
+  log = (log || '').trim()
+  if (!log) return null
+
+  // XMRig "accepted (N/M ...)" — N is the running accepted count from XMRig itself,
+  // so we trust XMRig's number directly rather than incrementing locally.
+  const xm = /accepted\s+\((\d+)\/\d+/i.exec(log)
+  if (xm && /xmrig|miner|cpu/i.test(log) === false) {
+    // Fallback only when not obviously XMRig — but XMRig lines do contain "miner"/"cpu"
+  }
+  if (xm) {
+    const n = Number(xm[1])
+    if (!Number.isNaN(n)) {
+      cpuAcceptedCount = n
+      return { kind: 'cpu', accepted: true, count: cpuAcceptedCount }
+    }
+  }
+
+  // kawpow-mac tagged line
+  if (/\[share\]\s+accepted/i.test(log)) {
+    gpuAcceptedCount += 1
+    return { kind: 'gpu', accepted: true, count: gpuAcceptedCount }
+  }
+  if (/\[share\]\s+rejected/i.test(log)) {
+    return { kind: 'gpu', accepted: false, count: gpuAcceptedCount }
+  }
+  return null
+}
+
+export function resetShareCounts() {
+  cpuAcceptedCount = 0
+  gpuAcceptedCount = 0
+}
+
 // getHashrate parses a single miner log line and returns
 // `{ kind: 'cpu' | 'gpu', value }` (value in H/s), or null if the line
 // carries no rate information.

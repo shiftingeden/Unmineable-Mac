@@ -10,6 +10,8 @@
     miningLogs,
     cpuHashrate,
     gpuHashrate,
+    cpuAcceptedShares,
+    gpuAcceptedShares,
     utilization,
     appleSilicon,
   } from '../store'
@@ -21,17 +23,29 @@
   import { ipc } from '../ipc'
   import * as router from 'svelte-spa-router'
   import { log } from '../util/log'
-  import { getHashrate, formatHashrate, resetHashrate } from '../util/mining'
+  import {
+    getHashrate,
+    formatHashrate,
+    resetHashrate,
+    getShareEvent,
+    resetShareCounts,
+  } from '../util/mining'
 
   let dialogLogsData = []
   miningLogs.subscribe((logs) => {
     dialogLogsData = logs
 
     // Both miners write to one log stream; route each line's rate by kind.
-    const hr = getHashrate(logs[logs.length - 1])
+    const last = logs[logs.length - 1]
+    const hr = getHashrate(last)
     if (hr) {
       if (hr.kind === 'cpu') $cpuHashrate = hr.value
       else if (hr.kind === 'gpu') $gpuHashrate = hr.value
+    }
+    const sh = getShareEvent(last)
+    if (sh && sh.accepted) {
+      if (sh.kind === 'cpu') $cpuAcceptedShares = sh.count
+      else if (sh.kind === 'gpu') $gpuAcceptedShares = sh.count
     }
   })
 
@@ -128,8 +142,11 @@
     if (miners.length === 0) return
 
     resetHashrate()
+    resetShareCounts()
     $cpuHashrate = 0
     $gpuHashrate = 0
+    $cpuAcceptedShares = 0
+    $gpuAcceptedShares = 0
 
     ipc.listen('onMiningStarted', () => {
       $isMining = true
@@ -254,12 +271,24 @@
           <span class="font-semibold">
             {$form.cpuEnabled ? formatHashrate($cpuHashrate) : '—'}
           </span>
+          {#if $form.cpuEnabled}
+            <span class="text-gray-500 ml-2">
+              · {$cpuAcceptedShares}
+              {$cpuAcceptedShares === 1 ? 'share' : 'shares'} accepted
+            </span>
+          {/if}
         </div>
         <div>
           GPU:
           <span class="font-semibold">
             {$form.gpuEnabled ? formatHashrate($gpuHashrate) : '—'}
           </span>
+          {#if $form.gpuEnabled}
+            <span class="text-gray-500 ml-2">
+              · {$gpuAcceptedShares}
+              {$gpuAcceptedShares === 1 ? 'share' : 'shares'} accepted
+            </span>
+          {/if}
         </div>
       </div>
     </div>

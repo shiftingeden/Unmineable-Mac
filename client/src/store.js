@@ -21,6 +21,10 @@ export const isMining = writable(false)
 export const cpuHashrate = writable(0)
 export const gpuHashrate = writable(0)
 
+// accepted shares per miner backend since the current run started
+export const cpuAcceptedShares = writable(0)
+export const gpuAcceptedShares = writable(0)
+
 // system load as percentages; -1 means "unknown"
 export const utilization = writable({ cpu: -1, gpu: -1 })
 
