@@ -7,6 +7,8 @@
 
 _macOS 11 or above_
 
+**[⬇ Download the latest release](https://github.com/shiftingeden/Unmineable-Mac/releases/latest)** — pre-built `.app` for Apple Silicon. No build required; just unzip and run. First launch needs right-click → Open (Gatekeeper).
+
 ## Introduction
 
 Unmineable-Mac is a 3rd-party [unMineable](https://unmineable.com) client for
