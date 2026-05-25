@@ -9,10 +9,17 @@ _macOS 11 or above_
 
 ## Download
 
-Pre-built apps for macOS 12+ — no build required:
+Pre-built apps from the [latest release](https://github.com/shiftingeden/Unmineable-Mac/releases/latest) — pick the one that matches your Mac:
 
-- **[⬇ Apple Silicon (M1 – M5+)](https://github.com/shiftingeden/Unmineable-Mac/releases/latest)** → `Unmineable-Mac-*-ARM.zip` — full GPU + CPU mining via the in-repo open-source [kawpow-mac](https://github.com/shiftingeden/kawpow-mac).
-- **[⬇ Intel Mac](https://github.com/shiftingeden/Unmineable-Mac/releases/latest)** → `Unmineable-Mac-*-X86.zip` — CPU mining (XMRig); GPU is best-effort via the legacy upstream Thinminerpro.
+| Your Mac | Download | minOS |
+|---|---|---|
+| Apple Silicon (M1 – M5+) | `Unmineable-Mac-*-ARM.zip` | 12.0 |
+| Intel — modern macOS | `Unmineable-Mac-*-X86.zip` | 11.0 |
+| Intel — Catalina (10.15) ⚠️ | `Unmineable-Mac-*-X86-Legacy.zip` | 10.15 |
+
+- **ARM** uses our in-repo open-source [kawpow-mac](https://github.com/shiftingeden/kawpow-mac) for GPU + XMRig for CPU.
+- **X86** uses XMRig 6.26.0 for CPU + the legacy upstream Thinminerpro for GPU (best-effort).
+- **X86-Legacy** is a frozen one-off for macOS Catalina — uses older Go (1.22) and older XMRig (6.15.0). It will **not** be rebuilt for future releases.
 
 First launch: right-click → Open (the app is ad-hoc signed, not notarized — Gatekeeper asks for confirmation the first time).
 
