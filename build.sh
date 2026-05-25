@@ -31,6 +31,8 @@ cat > $OUT/$APP/Contents/Info.plist << EOF
 	<string>io.shiftingeden.Unmineable-Mac</string>
 	<key>NSHighResolutionCapable</key>
   <true/>
+	<key>LSMinimumSystemVersion</key>
+	<string>12.0</string>
 	<key>LSUIElement</key>
   <string>1</string>
 </dict>
@@ -52,7 +54,12 @@ if [ -z "$GO_BIN" ]; then
   exit 1
 fi
 
-"$GO_BIN" build -o $OUT/$APP/Contents/MacOS/$NAME
+# Set MACOSX_DEPLOYMENT_TARGET so the produced binary's LC_BUILD_VERSION
+# minos matches the Info.plist LSMinimumSystemVersion. Without this, Go
+# inherits the host's current SDK (e.g. 26 on a Tahoe build host) and the
+# app refuses to launch on older macOS versions even though it would
+# otherwise run fine.
+MACOSX_DEPLOYMENT_TARGET=12.0 "$GO_BIN" build -o $OUT/$APP/Contents/MacOS/$NAME
 if [ $? -ne 0 ]; then
   echo "go build failed" >&2
   exit 1
