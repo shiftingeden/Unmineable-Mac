@@ -84,9 +84,14 @@ Requires a Swift toolchain (Xcode Command Line Tools).
 
 ```sh
 npm install
-npm run fetch:miners   # download miner binaries into assets/miner/
-npm run build:app      # build the Svelte UI + Go app into out/
+npm run fetch:miners
+npm run build:app
 ```
+
+- `npm run fetch:miners` downloads XMRig and the Intel Thinminerpro
+  fallback into `assets/miner/`, and clones + builds `kawpow-mac` from
+  source for Apple Silicon GPU mining.
+- `npm run build:app` builds the Svelte UI + Go app into `out/`.
 
 The built `Unmineable-Mac.app` lands in `out/`.
 
