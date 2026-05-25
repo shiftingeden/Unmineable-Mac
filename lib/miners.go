@@ -95,7 +95,7 @@ func buildXMRigCommand(f MinerForm) string {
 //
 //	{
 //	  "user": "RVN:<address>.<worker>",
-//	  "chosenURL": "kp.unmineable.com",
+//	  "chosenURL": "ethash.unmineable.com",
 //	  "chosenPort": 3333,
 //	  "deviceNumber": 0,
 //	  "intensity": 10371840
@@ -133,8 +133,12 @@ func patchThinminerproConfig(dir string, f MinerForm) error {
 
 	// Ensure the unMineable KawPow pool is configured. Thinminerpro's
 	// config.json uses the keys "chosenURL" / "chosenPort".
+	// NOTE: unMineable's KawPow/ProgPoW pool hostname is `ethash.unmineable.com`
+	// (the `kp.unmineable.com` host that older Thinminerpro releases shipped
+	// returns validation errors — see https://github.com/shiftingeden/kawpow-mac
+	// for the debug history).
 	if _, ok := cfg["chosenURL"]; !ok {
-		cfg["chosenURL"] = "kp.unmineable.com"
+		cfg["chosenURL"] = "ethash.unmineable.com"
 	}
 	if _, ok := cfg["chosenPort"]; !ok {
 		cfg["chosenPort"] = 3333

@@ -42,8 +42,8 @@ using the CPU / GPU checkboxes on the mining screen:
 | Backend | Type | Algorithm | unMineable pool | Requires |
 | --- | --- | --- | --- | --- |
 | [XMRig](https://github.com/xmrig/xmrig) `6.26.0` | CPU | RandomX | `rx.unmineable.com` | Any Mac |
-| **kawpow-mac** (in-repo) | GPU (Metal) | KawPow | `kp.unmineable.com` | **Apple Silicon** |
-| [Thinminerpro](https://github.com/rezahussain/thinminerpro) | GPU (Metal) | KawPow | `kp.unmineable.com` | Intel (fallback) |
+| **kawpow-mac** (in-repo) | GPU (Metal) | KawPow | `ethash.unmineable.com` | **Apple Silicon** |
+| [Thinminerpro](https://github.com/rezahussain/thinminerpro) | GPU (Metal) | KawPow | `ethash.unmineable.com` | Intel (fallback) |
 
 RandomX is CPU-only by design, so GPU mining uses a different algorithm
 (KawPow). On Apple Silicon we build our own KawPow miner from source
