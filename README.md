@@ -51,11 +51,11 @@ RandomX is CPU-only by design, so GPU mining uses a different algorithm
 submit accepted shares on M3+ chips. On Intel Macs we still fall back to
 the upstream Thinminerpro binary.
 
-> ⚠️ **GPU shares are not yet accepted by the unMineable pool.** The
-> in-repo kawpow-mac miner connects, builds the DAG, submits — but the pool
-> currently replies "Low difficulty share". CPU mining (XMRig) works
-> normally and pays out. See [kawpow-mac/README.md](kawpow-mac/README.md)
-> for the milestone tracker.
+> ℹ️ **GPU miner is now spec-compliant** — `kawpow-mac` passes Ravencoin's
+> official progpow_hash test vectors bitwise (blocks 0 and 49). Live-pool
+> acceptance is the last piece pending verification. See
+> [kawpow-mac/BUGS_AND_FIXES.md](kawpow-mac/BUGS_AND_FIXES.md) for the
+> chronicle of five algorithmic bugs that were uncovered along the way.
 
 > ⚠️ **GPU mining requires an Apple Silicon Mac (M-series).** Intel Macs
 > can only use the CPU miner (XMRig).
