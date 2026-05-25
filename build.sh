@@ -12,10 +12,12 @@ VERSION=$(sed -n 's/.*"version": "\(.*\)",/\1/p' package.json)
 #   ARCH=amd64  → Intel: amd64 Go binary + xmrig + legacy thinminerpro-intel
 #   ARCH=""     → host default (arm64 on Apple Silicon hosts, etc.)
 ARCH="${ARCH:-}"
+# Per-arch min macOS: ARM needs ≥ 12 (kawpow-mac uses APIs from Monterey).
+# X86 only needs ≥ 11 (XMRig 6.26.0's lower bound; nothing else demands more).
 case "$ARCH" in
-  arm64)        ARCH_SUFFIX="-ARM"; GO_ARCH="arm64" ;;
-  amd64|x86_64) ARCH_SUFFIX="-X86"; GO_ARCH="amd64" ;;
-  "")           ARCH_SUFFIX="";     GO_ARCH="" ;;
+  arm64)        ARCH_SUFFIX="-ARM"; GO_ARCH="arm64"; MIN_OS="12.0" ;;
+  amd64|x86_64) ARCH_SUFFIX="-X86"; GO_ARCH="amd64"; MIN_OS="11.0" ;;
+  "")           ARCH_SUFFIX="";     GO_ARCH="";      MIN_OS="12.0" ;;
   *) echo "Unknown ARCH=$ARCH (use arm64 or amd64)" >&2; exit 1 ;;
 esac
 
@@ -45,7 +47,7 @@ cat > $OUT/$APP/Contents/Info.plist << EOF
 	<key>NSHighResolutionCapable</key>
   <true/>
 	<key>LSMinimumSystemVersion</key>
-	<string>12.0</string>
+	<string>$MIN_OS</string>
 	<key>LSUIElement</key>
   <string>1</string>
 </dict>
@@ -78,12 +80,12 @@ if [ -n "$GO_ARCH" ]; then
   # have CGo. Apple's clang handles both arm64 and x86_64 natively, so pass
   # -arch <target> via CC/CXX.
   if [ "$GO_ARCH" = "amd64" ]; then CC_ARCH="x86_64"; else CC_ARCH="$GO_ARCH"; fi
-  MACOSX_DEPLOYMENT_TARGET=12.0 \
+  MACOSX_DEPLOYMENT_TARGET="$MIN_OS" \
     GOOS=darwin GOARCH="$GO_ARCH" CGO_ENABLED=1 \
     CC="clang -arch $CC_ARCH" CXX="clang++ -arch $CC_ARCH" \
     "$GO_BIN" build -o $OUT/$APP/Contents/MacOS/$NAME
 else
-  MACOSX_DEPLOYMENT_TARGET=12.0 "$GO_BIN" build -o $OUT/$APP/Contents/MacOS/$NAME
+  MACOSX_DEPLOYMENT_TARGET="$MIN_OS" "$GO_BIN" build -o $OUT/$APP/Contents/MacOS/$NAME
 fi
 if [ $? -ne 0 ]; then
   echo "go build failed" >&2
