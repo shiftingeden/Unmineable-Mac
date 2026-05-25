@@ -8,14 +8,14 @@ VERSION=$(sed -n 's/.*"version": "\(.*\)",/\1/p' package.json)
 
 # Architecture switch — produce a separate build per CPU target so the .zip
 # stays slim and users get exactly the miners that work on their hardware.
-#   ARCH=arm64  → Apple Silicon: arm64 Go binary + xmrig-m1 + kawpow-mac
+#   ARCH=arm64  → Apple Silicon (M1-M5+): arm64 Go binary + xmrig-m1 + kawpow-mac
 #   ARCH=amd64  → Intel: amd64 Go binary + xmrig + legacy thinminerpro-intel
 #   ARCH=""     → host default (arm64 on Apple Silicon hosts, etc.)
 ARCH="${ARCH:-}"
 case "$ARCH" in
-  arm64) ARCH_SUFFIX="-AppleSilicon"; GO_ARCH="arm64" ;;
-  amd64|x86_64) ARCH_SUFFIX="-Intel"; GO_ARCH="amd64" ;;
-  "")    ARCH_SUFFIX=""; GO_ARCH="" ;;
+  arm64)        ARCH_SUFFIX="-ARM"; GO_ARCH="arm64" ;;
+  amd64|x86_64) ARCH_SUFFIX="-X86"; GO_ARCH="amd64" ;;
+  "")           ARCH_SUFFIX="";     GO_ARCH="" ;;
   *) echo "Unknown ARCH=$ARCH (use arm64 or amd64)" >&2; exit 1 ;;
 esac
 

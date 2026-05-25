@@ -11,8 +11,8 @@ _macOS 11 or above_
 
 Pre-built apps for macOS 12+ — no build required:
 
-- **[⬇ Apple Silicon (M1 – M5+)](https://github.com/shiftingeden/Unmineable-Mac/releases/latest)** → `Unmineable-Mac-*-AppleSilicon.zip` — full GPU + CPU mining via the in-repo open-source [kawpow-mac](https://github.com/shiftingeden/kawpow-mac).
-- **[⬇ Intel Mac](https://github.com/shiftingeden/Unmineable-Mac/releases/latest)** → `Unmineable-Mac-*-Intel.zip` — CPU mining (XMRig); GPU is best-effort via the legacy upstream Thinminerpro.
+- **[⬇ Apple Silicon (M1 – M5+)](https://github.com/shiftingeden/Unmineable-Mac/releases/latest)** → `Unmineable-Mac-*-ARM.zip` — full GPU + CPU mining via the in-repo open-source [kawpow-mac](https://github.com/shiftingeden/kawpow-mac).
+- **[⬇ Intel Mac](https://github.com/shiftingeden/Unmineable-Mac/releases/latest)** → `Unmineable-Mac-*-X86.zip` — CPU mining (XMRig); GPU is best-effort via the legacy upstream Thinminerpro.
 
 First launch: right-click → Open (the app is ad-hoc signed, not notarized — Gatekeeper asks for confirmation the first time).
 
