@@ -42,8 +42,8 @@ using the CPU / GPU checkboxes on the mining screen:
 | Backend | Type | Algorithm | unMineable pool | Requires |
 | --- | --- | --- | --- | --- |
 | [XMRig](https://github.com/xmrig/xmrig) `6.26.0` | CPU | RandomX | `rx.unmineable.com` | Any Mac |
-| **kawpow-mac** (in-repo) | GPU (Metal) | KawPow | `ethash.unmineable.com` | **Apple Silicon** |
-| [Thinminerpro](https://github.com/rezahussain/thinminerpro) | GPU (Metal) | KawPow | `ethash.unmineable.com` | Intel (fallback) |
+| **kawpow-mac** (in-repo) | GPU (Metal) | KawPow | `kp.unmineable.com` | **Apple Silicon** |
+| [Thinminerpro](https://github.com/rezahussain/thinminerpro) | GPU (Metal) | KawPow | `kp.unmineable.com` | Intel (fallback) |
 
 RandomX is CPU-only by design, so GPU mining uses a different algorithm
 (KawPow). On Apple Silicon we build our own KawPow miner from source
@@ -51,11 +51,13 @@ RandomX is CPU-only by design, so GPU mining uses a different algorithm
 submit accepted shares on M3+ chips. On Intel Macs we still fall back to
 the upstream Thinminerpro binary.
 
-> ℹ️ **GPU miner is now spec-compliant** — `kawpow-mac` passes Ravencoin's
-> official progpow_hash test vectors bitwise (blocks 0 and 49). Live-pool
-> acceptance is the last piece pending verification. See
+> ✅ **GPU mining works on modern Apple Silicon (M3+) via `kawpow-mac`.**
+> First open-source KawPow miner verified accepted by the unMineable
+> pool on these chips (closed-source upstream Thinminerpro doesn't
+> submit accepted shares here). See
 > [kawpow-mac/BUGS_AND_FIXES.md](kawpow-mac/BUGS_AND_FIXES.md) for the
-> chronicle of five algorithmic bugs that were uncovered along the way.
+> chronicle of five algorithmic bugs that had to be uncovered along the
+> way.
 
 > ⚠️ **GPU mining requires an Apple Silicon Mac (M-series).** Intel Macs
 > can only use the CPU miner (XMRig).

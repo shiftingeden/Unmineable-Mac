@@ -113,7 +113,7 @@ fetch_thinminerpro() {
     cat > "$MINER_DIR/$destdir/config.json" <<'EOF'
 {
   "user": "REPLACED_AT_RUNTIME",
-  "chosenURL": "ethash.unmineable.com",
+  "chosenURL": "kp.unmineable.com",
   "chosenPort": 3333,
   "deviceNumber": 0,
   "intensity": 10371840
