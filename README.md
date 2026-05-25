@@ -27,7 +27,7 @@ not affiliated with unMineable.
 - [x] unMineable-flavoured UI, written in Go and Svelte
 - [x] **Selectable CPU and GPU miners** — switch with one toggle
 - [x] XMRig `6.26.0` for CPU mining (RandomX)
-- [x] Thinminerpro for GPU mining (KawPow / Metal) on Apple Silicon
+- [x] In-repo **kawpow-mac** miner for GPU mining (KawPow / Metal) on Apple Silicon — open-source replacement for Thinminerpro
 - [x] Dark mode
 - [x] All unMineable coins supported
 - [x] Tweak CPU usage for mining
@@ -42,14 +42,23 @@ using the CPU / GPU checkboxes on the mining screen:
 | Backend | Type | Algorithm | unMineable pool | Requires |
 | --- | --- | --- | --- | --- |
 | [XMRig](https://github.com/xmrig/xmrig) `6.26.0` | CPU | RandomX | `rx.unmineable.com` | Any Mac |
-| [Thinminerpro](https://github.com/rezahussain/thinminerpro) | GPU (Metal) | KawPow | `kp.unmineable.com` | **Apple Silicon** |
+| **kawpow-mac** (in-repo) | GPU (Metal) | KawPow | `kp.unmineable.com` | **Apple Silicon** |
+| [Thinminerpro](https://github.com/rezahussain/thinminerpro) | GPU (Metal) | KawPow | `kp.unmineable.com` | Intel (fallback) |
 
 RandomX is CPU-only by design, so GPU mining uses a different algorithm
-(KawPow) via Thinminerpro, which runs on the GPU through Metal.
+(KawPow). On Apple Silicon we build our own KawPow miner from source
+([kawpow-mac/](kawpow-mac/)) — Thinminerpro is closed-source and does not
+submit accepted shares on M3+ chips. On Intel Macs we still fall back to
+the upstream Thinminerpro binary.
 
-> ⚠️ **GPU mining requires an Apple Silicon Mac (M-series).** Thinminerpro is
-> a Metal miner; on Intel Macs the GPU option is disabled and only the CPU
-> miner (XMRig) is available.
+> ⚠️ **GPU shares are not yet accepted by the unMineable pool.** The
+> in-repo kawpow-mac miner connects, builds the DAG, submits — but the pool
+> currently replies "Low difficulty share". CPU mining (XMRig) works
+> normally and pays out. See [kawpow-mac/README.md](kawpow-mac/README.md)
+> for the milestone tracker.
+
+> ⚠️ **GPU mining requires an Apple Silicon Mac (M-series).** Intel Macs
+> can only use the CPU miner (XMRig).
 
 > ⚠️ Mining on a Mac is generally not profitable and runs the chips hot. Treat
 > this as something to experiment with on hardware you already own.
@@ -63,8 +72,11 @@ building:
 npm run fetch:miners
 ```
 
-This downloads XMRig (`6.26.0`, Intel + Apple Silicon) and Thinminerpro into
-`assets/miner/`.
+This downloads XMRig (`6.26.0`, Intel + Apple Silicon) and the Intel
+Thinminerpro fallback, **and builds the in-repo kawpow-mac GPU miner from
+source** (`swift build -c release`), installing it into `assets/miner/`.
+
+Requires a Swift toolchain (Xcode Command Line Tools).
 
 ## Build from source
 
@@ -81,9 +93,12 @@ The built `Unmineable-Mac.app` lands in `out/`.
 - Upgraded XMRig `6.17.0` → `6.26.0` — the stale build was the cause of the
   original "can not connect" failure on Apple Silicon
 - Added a **CPU / GPU miner toggle** on the mining screen
-- Added **Thinminerpro** (GPU / KawPow via Metal) for Apple Silicon
+- Added **Thinminerpro** (GPU / KawPow via Metal) for Apple Silicon — later
+  replaced by our in-repo **kawpow-mac** miner (Swift + Metal, open source)
+  because upstream Thinminerpro is closed-source and does not submit
+  accepted shares on M3+ Apple Silicon
 - Faster hashrate updates — XMRig reports every 5s, and a GPU hashrate is
-  derived from Thinminerpro's output
+  derived from the miner's `Computing <N> nonces` output
 - Bigger, **resizable** window with an optional inline **live-log panel**
 - Miner `stderr` is surfaced in the logs so launch failures are visible
 - Replaced "Buy Me a Coffee" with a **Donate** button (Litecoin)

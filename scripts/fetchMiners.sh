@@ -7,26 +7,26 @@
 #
 #   assets/miner/xmrig                   XMRig (Intel / x86_64)        — CPU / RandomX
 #   assets/miner/xmrig-m1                XMRig (Apple Silicon / arm64) — CPU / RandomX
-#   assets/miner/thinminerpro/           Thinminerpro, Apple Silicon   — GPU / KawPow
-#   assets/miner/thinminerpro-intel/     Thinminerpro, Intel           — GPU / KawPow
+#   assets/miner/thinminerpro/           kawpow-mac (Apple Silicon)    — GPU / KawPow
+#   assets/miner/thinminerpro-intel/     Thinminerpro, Intel           — GPU / KawPow (fallback)
 #
-# Each Thinminerpro folder holds the binary (named `thinminerpro`) plus all
-# of its release resources — config.json, the Metal shader library, etc. The
-# whole release folder is copied, because the miner traps on launch if its
-# resources are missing.
+# The Apple Silicon "thinminerpro" slot is built from source in this repo
+# (see ../kawpow-mac/ and scripts/buildKawpowMac.sh). It replaces the
+# closed-source upstream binary that fails to submit accepted shares on M3+.
 #
-# The binaries are NOT committed to the repo — they are large and have their
-# own licenses. This script fetches them from the upstream GitHub releases.
+# Each thinminerpro folder holds the binary (named `thinminerpro`) plus all
+# of its release resources — config.json, the Metal shader library, etc.
+#
+# The binaries are NOT committed to the repo — XMRig and the Intel
+# Thinminerpro fallback are downloaded from upstream GitHub releases; the
+# Apple Silicon GPU miner is built from source.
 #
 set -eu
 
 XMRIG_VERSION="6.26.0"
 
-# Thinminerpro release assets (see https://github.com/rezahussain/thinminerpro).
-# The 2022_09_04 build is the one that actually mines on Apple Silicon (M-series);
-# earlier builds trap while building the KawPow cache. The Intel build is the
-# last Intel-specific release and is best-effort only.
-THINMINERPRO_ARM_URL="https://github.com/rezahussain/thinminerpro/releases/download/2022_09_04/thinminerpro.zip"
+# Intel Thinminerpro fallback (closed-source upstream — best-effort only).
+# Apple Silicon now ships our own in-repo Swift+Metal miner; see below.
 THINMINERPRO_INTEL_URL="https://github.com/rezahussain/thinminerpro/releases/download/2022_02_20_intel/thinminerpro_intel.zip"
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -122,7 +122,11 @@ EOF
   fi
 }
 
-fetch_thinminerpro "$THINMINERPRO_ARM_URL" "thinminerpro" "Apple Silicon"
+# Apple Silicon: build our in-repo kawpow-mac from source.
+echo "==> Building Apple Silicon GPU miner from source (kawpow-mac)"
+sh "$ROOT/scripts/buildKawpowMac.sh"
+
+# Intel: fall back to the closed-source upstream binary.
 fetch_thinminerpro "$THINMINERPRO_INTEL_URL" "thinminerpro-intel" "Intel"
 
 # ---------------------------------------------------------------------------

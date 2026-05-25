@@ -15,3 +15,7 @@ assets/miner/xmrig
 assets/miner/xmrig-m1
 assets/miner/thinminerpro/
 assets/miner/thinminerpro-intel/
+
+# kawpow-mac is its own repo (https://github.com/shiftingeden/kawpow-mac).
+# scripts/buildKawpowMac.sh clones it here if missing.
+kawpow-mac/
